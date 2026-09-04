@@ -7,10 +7,31 @@ In summer of 2025, I worked remotely as a developer intern for **Dinámica y Des
 * **Python:** Automate the extraction and organization process of 11,000+ large JSON data packets
 * **Power BI:** Constructed 2 client-facing dashboards displaying historical data across client medical branches, (Total Ticket Information across all branches, specific 'Wait & Serve' times of customer fulfillment across branches)
 
-## Python Scripts
-Due to the company's database only allowing each JSON data packet to hold data from within a 24 hour time perdiod, I built a custom Python script that would allow for these packets to be downloaded and organized within the file system automatically based on each branch within the company and spanning the nearly 3 year time period I was working with.
+## Power BI Dashboards
+Once the data had been extracted and organized, it was cleaned in Excel and Power Query before being loaded into Power BI to create the final dashboard visualizations. I worked alongside management to ensure that these dashboards were meeting client needs.
 
-### Code Snippet: Parsing API Responses and Commiting Them to Local Storage
+### Total Tickets Across All Branches
+Snapshot showing the dashboard presenting the total tickets (logged foot traffic) from the client over the 3 year timespan across all of its branches.
+
+![Total Tickets Dashboard Visual](Total_Tickets.png)
+**Key Insights and Features:**
+* Processed and visualized over 6.64 Million total tickets, spanning from 2023 to 2025.
+* Provides a clear, top-level breakdown of completed vs abandoned tickets, 5.98 Million vs. 660.26 Thousand
+* Includes interactive filtering by year and month, in addition to visualizations comparing ticket volume and completion rates across individual branches.
+
+### Wait and Serve Times Across Branches
+Snapshot showing the dashboard presenting the wait and serve times across the client's branches over the 3 year timespan.
+
+![Wait and Serve Time Visual](Wait_and_Serve.png)
+**Key Insights and Features:**
+* separates wait and service times into intuitive, color-coded sections that quickly identify operational bottlenecks.
+* Visualized the percentage of wait and serve times by office and specific dates to help the client pinpoint exactly where and when delays have occurred.
+* Leverages donut chart to illustrate the overall proportion of completed, abandoned, and null entries.
+
+## Python Scripts
+Due to the company's database only allowing each JSON data packet to hold data from within a 24 hour time period, I built a custom Python script that would allow for these packets to be downloaded and organized within the file system automatically based on each branch within the company and spanning the nearly 3 year time period I was working with.
+
+### Code Snippet: Parsing API Responses and Committing Them to Local Storage
 * Below is a localized snippet of the extraction loop. Sensitive endpoints and tokens have been redacted.
 ```python
         records = []
@@ -29,31 +50,31 @@ Due to the company's database only allowing each JSON data packet to hold data f
                     "CustomerDocType": customer.get("docType")
                 }
                 records.append(ticket_flat)
-                #Depriciated format has been left unchanged to preserve originality.
-                #The modern equvilant of 'Fetcha del Turno' would be: 
+                #Deprecated format has been left unchanged to preserve originality.
+                #The modern equivalent of 'Fetcha del Turno' would be: 
                 #"Fecha del Turno": datetime.fromtimestamp(ticket.get("issueDate", 0) / 1000, tz=UTC)
             
 
             fileName = f"{branch_name}_{month} {day} {year}.json" #Automatically names the file. 
             #Files had to be downloaded individually due to the constraints of the company database. 
-            #A seperate merging program was created to resolve this.
+            #A separate merging program was created to resolve this.
 
             output_file = os.path.join(output_location, fileName) if output_location else fileName
 
             with open(output_file, "w", encoding="utf-8") as f:
                 json.dump(records, f, ensure_ascii=False, indent=4)
-            print(f"Saved{len(records)} tickets to '{output_file}'")
+            print(f"Saved {len(records)} tickets to '{output_file}'")
             day = day + 1 
         month = month + 1
         day = 1
     year = year + 1
     month = 1
 
-completeSound = "D:\Quanty\Auto Downloader\complete.wav"
-playsound (completeSound) #Automatically plays a notification sound to alert me when the download had finished. 
+completeSound = "<completeSound Folder>" #Optional addition
+playsound (completeSound) 
 #This allowed me to focus on other aspects of the project while this worked in the background.
 ```
-With over 11,000 individual JSON packets succesfully downloaded, I built a seperate merger to combine all isolated JSON files into unified datasets grouped by branch.
+With over 11,000 individual JSON packets successfully downloaded, I built a separate merger to combine all isolated JSON files into unified datasets grouped by branch.
 
 ### JSON Packet Merger Script:
 
@@ -61,8 +82,8 @@ With over 11,000 individual JSON packets succesfully downloaded, I built a seper
 import json
 import os
 
-inputFolder = r"D:\Quanty\Queries\Comfandi\Data Batches\Odontología Torres\Raw"
-outputFolder = r"D:\Quanty\Queries\Comfandi\Data Batches\Odontología Torres\Merged"
+inputFolder = r"<input_folder>"
+outputFolder = r"<output_folder>"
 fileNameOutput = "Odontología Torres_Merged.json" #Current Branch being worked on
 
 os.makedirs(outputFolder, exist_ok=True)
@@ -97,25 +118,6 @@ with open(outputFile, 'w', encoding='utf-8') as out_file:
     print ("Saving to file")
     json.dump(completeData, out_file, ensure_ascii=False, indent=4)
     
-print(f"Merged{len(mergedData)} items into {outputFile}") #Informs user of successful output
+print(f"Merged {len(mergedData)} items into {outputFile}") #Informs user of successful output
 ```
-## Power BI Dashboards
-After extracting, cleaning, and organizing the data, it was loaded into Microsoft Power BI to create final visualizations that were presented to clients. I worked alongside management to ensure that these dashboards were meeting client needs.
-
-### Total Tickets Across All Branches
-Snapshot showing the dashboard presenting the total tickets (logged foot traffic) from the client over the 3 year timespan across all of its branches.
-
-![Total Tickets Dashboard Visual](Total_Tickets.png)
-**Key Insights and Features:**
-* Processed and visualized over 6.64 Million total tickets, spanning from 2023 to 2025.
-* Provides a clear, top-level breakdown of competed vs abandoned tickets, 5.98 Million vs. 660.26 Thousand
-* Includes interactive filtering by year and month, in addition to visualizations comparing ticket volume and completion rates across individual branches.
-
-### Wait and Serve Times Across Branches
-Snapshot showing the dashboard presenting the wait and serve times across the client's branches over the 3 year timespan.
-
-![Wait and Serve Time Visual](Wait_and_Serve.png)
-**Key Insights and Features:**
-* Seperates wait and service times into intuitive, color-coded sections that quickly identify operational bottlenecks.
-* Visualized the percentage of wait and serve times by office and specific dates to help the client pinpoint exactly where and when delays have occured.
-* Leverages donut chart to illustrate the overall proportion of completed, abandoned, and null entries.
+Doing so increases efficiency and organization of the data for increased navigation ease and decreased operational friction.
